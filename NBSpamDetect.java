@@ -1,9 +1,5 @@
 /*
 	Spam detection using a Naive Bayes classifier.
-
-	The program is incomplete, it only reads in messages
-	and creates the dictionary together
-	with the word counts for each class (spam and ham).
 */
 
 import java.io.*;
@@ -15,7 +11,7 @@ public class NBSpamDetect
 	static class Multiple_Counter
 	{
 		int counterHam = 0;
-		int counterSpam    = 0;
+		int counterSpam = 0;
 	}
 
 
@@ -47,8 +43,14 @@ public class NBSpamDetect
 		// Check that there are 2 sub-directories
 		boolean hamFound = false; boolean spamFound = false;
 		for (int i=0; i<dir_listing.length; i++) {
-			if (dir_listing[i].getName().equals("ham")) { listing_ham = dir_listing[i].listFiles(); hamFound = true;}
-			else if (dir_listing[i].getName().equals("spam")) { listing_spam = dir_listing[i].listFiles(); spamFound = true;}
+			if (dir_listing[i].getName().equals("ham")) {
+				listing_ham = dir_listing[i].listFiles(); 
+				hamFound = true;
+			}
+			else if (dir_listing[i].getName().equals("spam")) { 
+				listing_spam = dir_listing[i].listFiles(); 
+				spamFound = true;
+			}
 		}
 		if (!hamFound || !spamFound) {
 			System.out.println( "- Error: specified directory does not contain ham and spam subdirectories.\n" );
@@ -83,8 +85,14 @@ public class NBSpamDetect
 		// Check that there are 2 sub-directories
 		boolean test_hamFound = false; boolean test_spamFound = false;
 		for (int i=0; i<test_dir_listing.length; i++) {
-			if (test_dir_listing[i].getName().equals("ham")) { test_listing_ham = test_dir_listing[i].listFiles(); test_hamFound = true;}
-			else if (test_dir_listing[i].getName().equals("spam")) { test_listing_spam = test_dir_listing[i].listFiles(); test_spamFound = true;}
+			if (test_dir_listing[i].getName().equals("ham")) { 
+				test_listing_ham = test_dir_listing[i].listFiles(); 
+				test_hamFound = true;
+			}
+			else if (test_dir_listing[i].getName().equals("spam")) { 
+				test_listing_spam = test_dir_listing[i].listFiles(); 
+				test_spamFound = true;
+			}
 		}
 		if (!test_hamFound || !test_spamFound) {
 			System.out.println( "- Error: specified test directory does not contain ham and spam subdirectories.\n" );
@@ -100,7 +108,7 @@ public class NBSpamDetect
 		System.out.println(" Classified Ham  FN             " + " " + "TN");
 		System.out.println("");
 		
-		for(int c=1; c<=3; c++) { //for each confusion matrix (total of three)
+		for(int c = 1; c <= 3; c++) { //for each confusion matrix (total of three)
 		
 		/*
 		 * BEGIN TRAIN
@@ -112,8 +120,7 @@ public class NBSpamDetect
 
 		// Read the e-mail messages
 		// The ham mail
-		for ( int i = 0; i < listing_ham.length; i ++ )
-		{
+		for ( int i = 0; i < listing_ham.length; i ++ ) {
 			FileInputStream i_s = new FileInputStream( listing_ham[i] );
 			BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
 			String line;
@@ -125,7 +132,6 @@ public class NBSpamDetect
 				
 				while (st.hasMoreTokens())
 				{
-					
 					word = st.nextToken().replaceAll("[^a-zA-Z]","");
 					if (c==2) { word = word.toLowerCase(); }
 					if (c==3) {
@@ -137,8 +143,7 @@ public class NBSpamDetect
 						
 					}
 					
-					
-          if ( !word.equals("") ) { // if string isn't empty
+          				if ( !word.equals("") ) { // if string isn't empty
 						if ( vocab.containsKey(word) )				// check if word exists already in the vocabulary
 						{
 							old_cnt = vocab.get(word);	// get the counter from the hashtable
@@ -154,16 +159,14 @@ public class NBSpamDetect
 						
 							vocab.put(word, fresh_cnt);			// put the new word with its new counter into the hashtable
 						}
-	        }
+	        			}
 				}
 			}
 
                 	in.close();
-        	        
 		}
 		// The spam mail
-		for ( int i = 0; i < listing_spam.length; i ++ )
-		{
+		for ( int i = 0; i < listing_spam.length; i ++ ) {
 			FileInputStream i_s = new FileInputStream( listing_spam[i] );
 			BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
 			String line;
@@ -172,7 +175,6 @@ public class NBSpamDetect
         	        while ((line = in.readLine()) != null)					// read a line
 			{
 				StringTokenizer st = new StringTokenizer(line);			// parse it into words
-		
 				while (st.hasMoreTokens())
 				{
 					word = st.nextToken().replaceAll("[^a-zA-Z]","");
@@ -187,7 +189,7 @@ public class NBSpamDetect
 					}
 					
 				  if ( ! word.equals("") ) {	
-						if ( vocab.containsKey(word) )				// check if word exists already in the vocabulary
+						if ( vocab.containsKey(word) )		// check if word exists already in the vocabulary
 						{
 							old_cnt = vocab.get(word);	// get the counter from the hashtable
 							old_cnt.counterSpam ++;			// and increment it
@@ -198,7 +200,7 @@ public class NBSpamDetect
 						{
 							Multiple_Counter fresh_cnt = new Multiple_Counter();
 							fresh_cnt.counterHam = 1;
-							fresh_cnt.counterSpam    = 2;
+							fresh_cnt.counterSpam = 2;
 						
 							vocab.put(word, fresh_cnt);			// put the new word with its new counter into the hashtable
 						}
@@ -212,8 +214,7 @@ public class NBSpamDetect
 		// Print out the hash table
 		int nWordsHam = 0, nWordsSpam = 0;
 		
-		for (Enumeration<String> e = vocab.keys() ; e.hasMoreElements() ;)
-		{	
+		for (Enumeration<String> e = vocab.keys(); e.hasMoreElements(); ) {	
 			String word;
 			
 			word = e.nextElement();
@@ -263,49 +264,50 @@ public class NBSpamDetect
 		 * BEGIN TEST
 		 */
 		
-				// Read the e-mail messages
-				// The ham mail
-				int hamFalsePos = 0, hamTrueNeg = 0;
-				for ( int i = 0; i < test_listing_ham.length; i ++ )
+		// Read the e-mail messages
+		// The ham mail
+		int hamFalsePos = 0, hamTrueNeg = 0;
+		for ( int i = 0; i < test_listing_ham.length; i ++ ) 
+		{
+			FileInputStream i_s = new FileInputStream( test_listing_ham[i] );
+			BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
+			String line;
+			double currHamProb = pHam, currSpamProb = pSpam;
+			
+        	        while ((line = in.readLine()) != null)					// read a line
+			{
+				StringTokenizer st = new StringTokenizer(line);			// parse it into words
+				while (st.hasMoreTokens())
 				{
-					FileInputStream i_s = new FileInputStream( test_listing_ham[i] );
-					BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
-					String line;
-					double currHamProb = pHam, currSpamProb = pSpam;
-					
-		        	        while ((line = in.readLine()) != null)					// read a line
-					{
-						StringTokenizer st = new StringTokenizer(line);			// parse it into words
-				
-						while (st.hasMoreTokens())
-						{
+					word = st.nextToken().replaceAll("[^a-zA-Z]","");
+					if (c==2) { word = word.toLowerCase(); }
+					if (c==3) {
+						if(line.startsWith("From:") || line.startsWith("To:") || line.startsWith("Cc:") || line.startsWith("Subject:")) { 
+							if(word.equals("From") || word.equals("To") || word.equals("Cc") || word.equals("Subject")) { word = ""; }
+						} else {
+							word = "";
+						}
+					}
 							
-							word = st.nextToken().replaceAll("[^a-zA-Z]","");
-							if (c==2) { word = word.toLowerCase(); }
-							if (c==3) {
-								if(line.startsWith("From:") || line.startsWith("To:") || line.startsWith("Cc:") || line.startsWith("Subject:")) { 
-									if(word.equals("From") || word.equals("To") || word.equals("Cc") || word.equals("Subject")) { word = ""; }
-								} else {
-									word = "";
-								}
-								
-							}
-							
-		          if ( !word.equals("") ) { // if string isn't empty
+		        				if ( !word.equals("") ) { // if string isn't empty
 								if ( vocab.containsKey(word) )				// check if word exists already in the vocabulary
 								{
 									currHamProb += pWi_Ham.get(word);
 									currSpamProb+= pWi_Spam.get(word);
 								}
-			        }
+			        			}
 						}
 					}
 
 		                	in.close();
 		                	
 		                	//classify message
-		                	if(currSpamProb > currHamProb) { hamFalsePos++; }
-		                	else { hamTrueNeg++; }
+		                	if(currSpamProb > currHamProb) { 
+		                		hamFalsePos++; 
+		                	}
+		                	else { 
+		                		hamTrueNeg++; 
+		                	}
 				}
 				
 				// The spam mail
@@ -320,23 +322,26 @@ public class NBSpamDetect
 		        	        while ((line = in.readLine()) != null)					// read a line
 					{
 						StringTokenizer st = new StringTokenizer(line);			// parse it into words
-				
 						while (st.hasMoreTokens())
 						{
-							
 							word = st.nextToken().replaceAll("[^a-zA-Z]","");
 							if (c==2) { word = word.toLowerCase(); }
 							if (c==3) {
-								if(line.startsWith("From:") || line.startsWith("To:") || line.startsWith("Cc:") || line.startsWith("Subject:")) { 
-									if(word.equals("From") || word.equals("To") || word.equals("Cc") || word.equals("Subject")) { word = ""; }
+								if(line.startsWith("From:") || line.startsWith("To:") 
+								    || line.startsWith("Cc:") || line.startsWith("Subject:")) { 
+									
+									if(word.equals("From") || word.equals("To") 
+									    || word.equals("Cc") || word.equals("Subject")) { 
+									    	
+									    	word = ""; 
+									}
+									
 								} else {
 									word = "";
-								}
-								
+								}	
 							}
-							
 						  if ( ! word.equals("") ) {	
-								if ( vocab.containsKey(word) )				// check if word exists already in the vocabulary
+								if ( vocab.containsKey(word) )		// check if word exists already in the vocabulary
 								{
 									currHamProb += pWi_Ham.get(word);
 									currSpamProb+= pWi_Spam.get(word);
@@ -348,21 +353,24 @@ public class NBSpamDetect
 		                	in.close();
 		                	
 		                	//classify message
-		                	if(currSpamProb > currHamProb) { spamTruePos++; }
-		                	else { spamFalseNeg++; }
+		                	if(currSpamProb > currHamProb) { 
+		                		spamTruePos++;  	
+		                	} else { 
+		                		spamFalseNeg++; 
+		                	}
 		                	
 				}
 		
 				System.out.println("["+c+"]"+"\t\t True Spam \t True Ham");
 				System.out.println("Classified Spam  " + spamTruePos + "\t\t " + hamFalsePos);
 				System.out.println(" Classified Ham  " + spamFalseNeg + "\t\t " + hamTrueNeg);
-				if(c!=3) { System.out.println(""); }
+				if(c !=3 ) { 
+					System.out.println(""); 
+				}
 				
-		}
-
+			}
 		/*
 		 * END TEST
 		 */
-		
 	}
 }
